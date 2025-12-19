@@ -188,6 +188,27 @@
         .manager-card h4 { margin: 0 0 5px 0; font-size: 0.9rem; color: var(--unor-blue); }
         .manager-card p { margin: 0; font-size: 0.7rem; color: #666; }
 
+        /* Toggle UI Button */
+        .toggle-btn {
+            position: fixed;
+            top: 120px;
+            right: 20px;
+            z-index: 2000;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+        .toggle-btn:hover { background: rgba(0, 0, 0, 0.8); border-color: white; }
+
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
@@ -201,7 +222,7 @@
         .btn-cancel { background: #c0392b; color: white; }
 
         @media print {
-            .print-btn, .manager-btn, .nav-arrow, .progress-nav, .modal { display: none !important; }
+            .print-btn, .manager-btn, .toggle-btn, .nav-arrow, .progress-nav, .modal { display: none !important; }
             body, html { height: auto; overflow: visible; background: white; }
             .slider { display: block; height: auto; overflow: visible; width: 100%; }
             .slide {
@@ -224,6 +245,7 @@
 <div class="swipe-hint">SWIPE &#10095;&#10095;</div>
 <button class="print-btn" onclick="window.print()">&#128424; Print Script</button>
 <button class="manager-btn" onclick="openSlideManager()">&#9881; Manage Slides</button>
+<button class="toggle-btn" onclick="toggleUI()" title="Hide/Show Controls">&#128065;</button>
 
 <!-- Modals -->
 <div id="managerModal" class="modal">
@@ -706,6 +728,14 @@
         renderMainSlider();
         closeModal('editModal');
         openSlideManager();
+    }
+
+    function toggleUI() {
+        const printBtn = document.querySelector('.print-btn');
+        const managerBtn = document.querySelector('.manager-btn');
+        const isHidden = printBtn.style.display === 'none';
+        printBtn.style.display = isHidden ? '' : 'none';
+        managerBtn.style.display = isHidden ? '' : 'none';
     }
 
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
