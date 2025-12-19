@@ -127,8 +127,46 @@
             font-family: 'Montserrat', sans-serif;
         }
 
+        /* Slide Manager Styles */
+        .manager-btn {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            z-index: 2000;
+            background: var(--unor-blue);
+            color: var(--unor-gold);
+            border: 1px solid var(--unor-gold);
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .modal { display: none; position: fixed; z-index: 4000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8); }
+        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 600px; border-radius: 10px; color: #333; max-height: 90vh; overflow-y: auto; }
+        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close:hover { color: black; }
+        
+        .slide-list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; margin-top: 20px; }
+        .manager-card { background: #eee; padding: 15px; border-radius: 8px; cursor: pointer; transition: transform 0.2s; border: 2px solid transparent; }
+        .manager-card:hover { transform: scale(1.05); border-color: var(--unor-blue); }
+        .manager-card h4 { margin: 0 0 5px 0; font-size: 0.9rem; color: var(--unor-blue); }
+        .manager-card p { margin: 0; font-size: 0.7rem; color: #666; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
+        .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        
+        .modal-actions { text-align: right; margin-top: 20px; }
+        .modal-actions button { padding: 8px 16px; margin-left: 10px; cursor: pointer; border-radius: 4px; border: none; font-weight: bold; }
+        .btn-save { background: var(--festive-green); color: white; }
+        .btn-cancel { background: #c0392b; color: white; }
+
         @media print {
-            .print-btn, .nav-arrow, .progress-nav { display: none !important; }
+            .print-btn, .manager-btn, .nav-arrow, .progress-nav, .modal { display: none !important; }
             body, html { height: auto; overflow: visible; background: white; }
             .slider { display: block; height: auto; overflow: visible; width: 100%; }
             .slide {
@@ -149,270 +187,31 @@
 <div class="nav-arrow prev" onclick="moveSlide(-1)">&#10094;</div>
 <div class="nav-arrow next" onclick="moveSlide(1)">&#10095;</div>
 <button class="print-btn" onclick="window.print()">&#128424; Print Script</button>
+<button class="manager-btn" onclick="openSlideManager()">&#9881; Manage Slides</button>
+
+<!-- Modals -->
+<div id="managerModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('managerModal')">&times;</span>
+        <h2>Slide Manager</h2>
+        <div id="slideList" class="slide-list-grid"></div>
+    </div>
+</div>
+
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('editModal')">&times;</span>
+        <h2>Edit Slide</h2>
+        <div id="editForm"></div>
+        <div class="modal-actions">
+            <button class="btn-save" onclick="saveSlide()">Save</button>
+            <button class="btn-cancel" onclick="closeModal('editModal')">Cancel</button>
+        </div>
+    </div>
+</div>
 
 <div class="slider" id="slider">
-    
-    <div class="slide" style="background: var(--vo-gray);">
-        <div class="seq-num">01</div>
-        <div class="header"><h2><span class="vo-badge">VOICE OVER</span> Spiritual Opening</h2><p>Off-Stage Audio Only</p></div>
-        <div class="section intro-section">
-            <span class="label">The Script</span>
-            <div class="content">"Good evening, UNO-Rians! To begin this holy and festive night, let us all stand in reverence for the Invocation, to be rendered in music by the <b>Kapawa Choir</b> and in words by <b>Rev. Fr. Leo G. Alaras, OAR</b>, our VP for Identity, Formation, and Mission."</div>
-        </div>
-    </div>
-
-    <div class="slide" style="background: var(--vo-gray);">
-        <div class="seq-num">02</div>
-        <div class="header"><h2><span class="vo-badge">VOICE OVER</span> National Pride</h2><p>Off-Stage Audio Only</p></div>
-        <div class="section intro-section">
-            <span class="label">The Script</span>
-            <div class="content">"Please remain standing for the Philippine National Anthem.</div>
-        </div>
-    </div>
-
-    <div class="slide" style="background: var(--vo-gray);">
-        <div class="seq-num">03</div>
-        <div class="header"><h2><span class="vo-badge">VOICE OVER</span> Host Showcase</h2><p>Off-Stage Audio Only</p></div>
-        <div class="section intro-section">
-            <span class="label">The Script</span>
-            <div class="content">"Everyone may now be seated. Please enjoy a special AVP presentation on our theme for 2025: <b>'Rise... Rebuild... Celebrate Christmas!'</b> followed immediately by the high-energy opening production number from our official hosts—the <b>College of Engineering (COEN)</b>!"</div>
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="seq-num">04</div>
-        <div class="header"><h2>Erl, Rue, Dan, & Mark</h2><p>Host Entrance</p></div>
-        <div class="section bridge-section">
-            <span class="label">The Bridge</span>
-            <div class="content bridge-text">Erl, Rue, Dan, and Mark walk on stage with big energy, applauding COEN.</div>
-        </div>
-        <div class="section intro-section">
-            <span class="label">The Intro</span>
-            <div class="content">"Whooo! Bacolod, can you feel that Engineering energy?! Good evening, UNO-R! We are your hosts for this spectacular night—I'm <b>Erl</b>, and with me are <b>Rue, Dan, and Mark!</b>"</div>
-        </div>
-        <div class="section intro-section">
-            <span class="label">The Spirit</span>
-            <div class="content">"Tonight is all about gratitude. We've Risen, we've Rebuilt, and now—it's time to Celebrate Christmas as one Recoleto family!"</div>
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="seq-num">05</div>
-        <div class="header"><h2>Father President</h2><p>President's Message</p></div>
-        <div class="section intro-section">
-            <span class="label">The Intro</span>
-            <div class="content">"To share a message of hope that lights up our path like the star of Bethlehem, let us welcome our Father President, <b>Rev. Fr. Joel A. Alve, OAR.</b>"</div>
-        </div>
-        <div class="section thank-section">
-            <span class="label">Improved Thank You</span>
-            <div class="content thank-text">"Thank you, Fr. Joel! Your words are like the hanging of the first Christmas lights, inspiring, colorfully bright ,and reminding us of the beauty of our mission."</div>
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="seq-num">06</div>
-        <div class="header"><h2>The Christmas Feast</h2><p>Dinner & Minor Raffles</p></div>
-        <div class="section bridge-section">
-            <span class="label">The Bridge</span>
-            <div class="content bridge-text">"Fr. Joel fed our souls; now let’s let the Acacia buffet feed our appetites!"</div>
-        </div>
-        <div class="section intro-section">
-            <span class="label">The Intro</span>
-            <div class="content">"Dinner is officially served! Dig in, enjoy the music, and keep your raffle tickets handy—we’re drawing our <b>Minor Prizes</b> while you dine!"</div>
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="seq-num">07</div>
-        <div class="header"><h2>Program Part 2</h2><p>Lay Admin Opener</p></div>
-        <div class="section bridge-section">
-            <span class="label">The Bridge</span>
-            <div class="content bridge-text">"I hope your stomachs are full because it’s time to fill the stage with talent!"</div>
-        </div>
-        <div class="section intro-section">
-            <span class="label">The Intro</span>
-            <div class="content">"Welcome to Part 2! Opening our Musical Show, let’s welcome the **Lay Admin** with the holiday anthem: <b>'All I Want for Christmas!'</b>"</div>
-        </div>
-        <div class="section thank-section">
-            <span class="label">Improved Thank You</span>
-            <div class="content thank-text">"What a charming start! If all you want for Christmas is talent, the Lay Admin just delivered it in spades!"</div>
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="seq-num">08</div>
-        <div class="header"><h2>Cluster 1</h2><p>Song: It's Like an Earthquake</p></div>
-        <div class="section intro-section">
-            <span class="label">The Intro</span>
-            <div class="content">"Every rebuilding process starts with a shake-up! Let’s feel the ground move with Cluster 1!"</div>
-            <div class="dept-list">Featuring: President's Office, Planning, QA, Marketing, Library, STEP, ETEEAP, & REED.</div>
-        </div>
-        <div class="section thank-section">
-            <span class="label">Improved Thank You</span>
-            <div class="content thank-text">"That was ground-breaking! Thank you, Cluster 1, for shaking off the dust and rising to the occasion!"</div>
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="seq-num">09</div>
-        <div class="header"><h2>Cluster 2</h2><p>Song: I Will Survive</p></div>
-        <div class="section intro-section">
-            <span class="label">The Intro</span>
-            <div class="content">"They are the backbone of our admin operations, and they prove that no matter the challenge, we are survivors! Here is Cluster 2!"</div>
-            <div class="dept-list">Featuring: VP-Admin, HRMDO, SSD, ICTD, Registrar, & SDPC.</div>
-        </div>
-        <div class="section thank-section">
-            <span class="label">Improved Thank You</span>
-            <div class="content thank-text">"Survival never looked so glamorous! Thank you, Cluster 2, for that incredible disco-powered resilience!"</div>
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="seq-num">10</div>
-        <div class="header"><h2>Cluster 3</h2><p>Song: Here Comes the Rain Again</p></div>
-        <div class="section intro-section">
-            <span class="label">The Intro</span>
-            <div class="content">"You can’t have growth without a little rain. Let’s welcome our academics and researchers who nurture our community. Cluster 3!"</div>
-            <div class="dept-list">Featuring: VP-Academics & Research and Integrated School.</div>
-        </div>
-        <div class="section thank-section">
-            <span class="label">Improved Thank You</span>
-            <div class="content thank-text">"That was refreshing! Thank you, Cluster 3, for washing away the challenges and bringing the growth!"</div>
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="seq-num">11</div>
-        <div class="header"><h2>Cluster 4</h2><p>Song: Rock and Roll</p></div>
-        <div class="section intro-section">
-            <span class="label">The Intro</span>
-            <div class="content">"We built this institution on a solid foundation of faith... and a little bit of Rock and Roll! Get loud for Cluster 4!"</div>
-            <div class="dept-list">Featuring: VP-Academics & Research and all Colleges.</div>
-        </div>
-        <div class="section thank-section">
-            <span class="label">Improved Thank You</span>
-            <div class="content thank-text">"You guys didn't just build this city; you rocked this ballroom! What an electric performance!"</div>
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="seq-num">12</div>
-        <div class="header"><h2>Cluster 5</h2><p>Songs: Staying Alive / Get Loud</p></div>
-        <div class="section intro-section">
-            <span class="label">The Intro</span>
-            <div class="content">"It’s time for the grand finale of our musical show! They’re staying alive and they’re getting LOUD! Here is Cluster 5!"</div>
-            <div class="dept-list">Featuring: VP-IFM, DSA, Accounting, Property, MIS, & Maintenance teams.</div>
-        </div>
-        <div class="section thank-section">
-            <span class="label">Improved Thank You</span>
-            <div class="content thank-text">"Now THAT is how you celebrate! Thank you, Cluster 5, for bringing the house down and the spirits up!"</div>
-        </div>
-    </div>
-    <div class="slide">
-        <div class="seq-num-top">IX</div>
-        <div class="header">
-            <h2>Holiday Small Wonders</h2>
-            <p>MINOR RAFFLE DRAW</p>
-        </div>
-        <div class="section intro-section">
-            <span class="label">The Script</span>
-            <div class="content">"Like the secret surprises hidden in our Christmas stockings, it’s time to reveal our <b>Minor Raffle winners!</b> Let’s share the spirit of giving and see whose Yuletide just got a little brighter. Erl, Rue, help me out—who's our first winner?"</div>
-        </div>
-        <div class="section thank-section">
-            <span class="label">Thank You</span>
-            <div class="content thank-text">"Congratulations to our winners! May these small wonders be just the beginning of your holiday blessings!"</div>
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="seq-num-top">X</div>
-        <div class="header">
-            <h2>Unwrapping the Unexpected</h2>
-            <p>A CHRISTMAS MYSTERY PERFORMANCE</p>
-        </div>
-        <div class="section bridge-section">
-            <span class="label">The Bridge</span>
-            <div class="content bridge-text">"You know that feeling of looking at a mystery gift under the tree and wondering what’s inside? Well, it's time to find out!"</div>
-        </div>
-        <div class="section intro-section">
-            <span class="label">The Script</span>
-            <div class="content">"We have a special 'gift' that isn't on your program. To add a dash of starlight to our evening, please put your hands together for this **Surprise Number!**"</div>
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="seq-num-top">XI</div>
-        <div class="header">
-            <h2>Big Dreams Under the Tree</h2>
-            <p>MAJOR RAFFLE DRAW</p>
-        </div>
-        <div class="section intro-section">
-            <span class="label">The Script</span>
-            <div class="content">"The cold breeze is outside, but the heat is definitely rising in here! It’s time for the big ones, UNO-R! We are drawing our **Major Prizes**. Dan, Mark, get that raffle drum spinning! Who’s ready to win big?"</div>
-        </div>
-        <div class="section thank-section">
-            <span class="label">Thank You</span>
-            <div class="content thank-text">"Wow! To our lucky Major winners—that is one way to have a Very Merry Christmas! Enjoy those incredible gifts!"</div>
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="seq-num-top">XII</div>
-        <div class="header">
-            <h2>A Heart Full of Gratitude</h2>
-            <p>MESSAGE FROM THE CHAIR</p>
-        </div>
-        <div class="section intro-section">
-            <span class="label">The Script</span>
-            <div class="content">"As we prepare to close the formal part of our evening, let’s look to the guiding star of this event. To share his final thoughts on how we ‘Rise and Rebuild,’ please welcome the Chair of the 2025 Party—<b>Rev. Fr. Romeo ben A. Potencio, Jr., OAR.</b>"</div>
-        </div>
-        <div class="section thank-section">
-            <span class="label">Thank You</span>
-            <div class="content thank-text">"Thank you, Fr. Ben! Your leadership has been the greatest ornament on our celebration tonight. We are truly grateful!"</div>
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="seq-num-top">XIII</div>
-        <div class="header">
-            <h2>The Star on Top of the Tree</h2>
-            <p>GRAND RAFFLE DRAW</p>
-        </div>
-        <div class="section bridge-section">
-            <span class="label">The Bridge</span>
-            <div class="content bridge-text">"This is it... the moment that makes the reindeer fly and the sleigh bells ring!"</div>
-        </div>
-        <div class="section intro-section">
-            <span class="label">The Script</span>
-            <div class="content">"The tension is thicker than kalamayhati! It is time for our **Grand Raffle Prize**. Who is going home with the ultimate holiday blessing tonight? Let’s find out!"</div>
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="seq-num-top">XIV</div>
-        <div class="header">
-            <h2>A Symphony of Recoleto Hearts</h2>
-            <p>UNIFIED VOICES</p>
-        </div>
-        <div class="section intro-section">
-            <span class="label">The Script</span>
-            <div class="content">"Before we dance, let’s harmonize. As one family, let us lift our voices and fill this hall with the music of unity. Please stand and join us for our **Community Singing!**"</div>
-        </div>
-    </div>
-
-    <div class="slide" style="background: var(--unor-blue);">
-        <div class="seq-num-top" style="color:var(--unor-gold)">XV</div>
-        <div class="header">
-            <h2 style="color:var(--unor-gold)">Let the Yuletide Magic Begin</h2>
-            <p style="color:white">FINAL CELEBRATION</p>
-        </div>
-        <div class="section" style="text-align:center; border:none; background:rgba(255,255,255,0.1);">
-            <div class="content" style="font-size: 1.8rem; color:var(--unor-gold); font-weight:800;">
-                "Merry Christmas, UNO-R family!<br><br><b>PARTY! PARTY! PARTY!</b>"
-            </div>
-        </div>
-    </div>
-
+    <!-- Content will be injected via JavaScript -->
 </div>
 
 <script>
@@ -435,6 +234,265 @@
     function moveSlide(direction) {
         slider.scrollBy({ left: direction * slider.clientWidth, behavior: 'smooth' });
     }
+
+    const scriptData = [
+        {
+            seqNum: "01",
+            style: "background: var(--vo-gray);",
+            header: { badge: "VOICE OVER", title: "Spiritual Opening", subtitle: "Off-Stage Audio Only" },
+            sections: [
+                { type: "intro-section", label: "The Script", content: `"Good evening, UNO-Rians! To begin this holy and festive night, let us all stand in reverence for the Invocation, to be rendered in music by the <b>Kapawa Choir</b> and in words by <b>Rev. Fr. Leo G. Alaras, OAR</b>, our VP for Identity, Formation, and Mission."` }
+            ]
+        },
+        {
+            seqNum: "02",
+            style: "background: var(--vo-gray);",
+            header: { badge: "VOICE OVER", title: "National Pride", subtitle: "Off-Stage Audio Only" },
+            sections: [
+                { type: "intro-section", label: "The Script", content: `"Please remain standing for the Philippine National Anthem."` }
+            ]
+        },
+        {
+            seqNum: "03",
+            style: "background: var(--vo-gray);",
+            header: { badge: "VOICE OVER", title: "Host Showcase", subtitle: "Off-Stage Audio Only" },
+            sections: [
+                { type: "intro-section", label: "The Script", content: `"Everyone may now be seated. Please enjoy a special AVP presentation on our theme for 2025: <b>'Rise... Rebuild... Celebrate Christmas!'</b> followed immediately by the high-energy opening production number from our official hosts—the <b>College of Engineering (COEN)</b>!"` }
+            ]
+        },
+        {
+            seqNum: "04",
+            header: { title: "Erl, Rue, Dan, & Mark", subtitle: "Host Entrance" },
+            sections: [
+                { type: "bridge-section", label: "The Bridge", content: "Erl, Rue, Dan, and Mark walk on stage with big energy, applauding COEN.", contentClass: "bridge-text" },
+                { type: "intro-section", label: "The Intro", content: `"Whooo! Bacolod, can you feel that Engineering energy?! Good evening, UNO-R! We are your hosts for this spectacular night—I'm <b>Erl</b>, and with me are <b>Rue, Dan, and Mark!</b>"` },
+                { type: "intro-section", label: "The Spirit", content: `"Tonight is all about gratitude. We've Risen, we've Rebuilt, and now—it's time to Celebrate Christmas as one Recoleto family!"` }
+            ]
+        },
+        {
+            seqNum: "05",
+            header: { title: "Father President", subtitle: "President's Message" },
+            sections: [
+                { type: "intro-section", label: "The Intro", content: `"To share a message of hope that lights up our path like the star of Bethlehem, let us welcome our Father President, <b>Rev. Fr. Joel A. Alve, OAR.</b>"` },
+                { type: "thank-section", label: "Improved Thank You", content: `"Thank you, Fr. Joel! Your words are like the hanging of the first Christmas lights, inspiring, colorfully bright ,and reminding us of the beauty of our mission."`, contentClass: "thank-text" }
+            ]
+        },
+        {
+            seqNum: "06",
+            header: { title: "The Christmas Feast", subtitle: "Dinner & Minor Raffles" },
+            sections: [
+                { type: "bridge-section", label: "The Bridge", content: `"Fr. Joel fed our souls; now let’s let the Acacia buffet feed our appetites!"`, contentClass: "bridge-text" },
+                { type: "intro-section", label: "The Intro", content: `"Dinner is officially served! Dig in, enjoy the music, and keep your raffle tickets handy—we’re drawing our <b>Minor Prizes</b> while you dine!"` }
+            ]
+        },
+        {
+            seqNum: "07",
+            header: { title: "Program Part 2", subtitle: "Lay Admin Opener" },
+            sections: [
+                { type: "bridge-section", label: "The Bridge", content: `"I hope your stomachs are full because it’s time to fill the stage with talent!"`, contentClass: "bridge-text" },
+                { type: "intro-section", label: "The Intro", content: `"Welcome to Part 2! Opening our Musical Show, let’s welcome the **Lay Admin** with the holiday anthem: <b>'All I Want for Christmas!'</b>"` },
+                { type: "thank-section", label: "Improved Thank You", content: `"What a charming start! If all you want for Christmas is talent, the Lay Admin just delivered it in spades!"`, contentClass: "thank-text" }
+            ]
+        },
+        {
+            seqNum: "08",
+            header: { title: "Cluster 1", subtitle: "Song: It's Like an Earthquake" },
+            sections: [
+                { type: "intro-section", label: "The Intro", content: `"Every rebuilding process starts with a shake-up! Let’s feel the ground move with Cluster 1!"`, deptList: "Featuring: President's Office, Planning, QA, Marketing, Library, STEP, ETEEAP, & REED." },
+                { type: "thank-section", label: "Improved Thank You", content: `"That was ground-breaking! Thank you, Cluster 1, for shaking off the dust and rising to the occasion!"`, contentClass: "thank-text" }
+            ]
+        },
+        {
+            seqNum: "09",
+            header: { title: "Cluster 2", subtitle: "Song: I Will Survive" },
+            sections: [
+                { type: "intro-section", label: "The Intro", content: `"They are the backbone of our admin operations, and they prove that no matter the challenge, we are survivors! Here is Cluster 2!"`, deptList: "Featuring: VP-Admin, HRMDO, SSD, ICTD, Registrar, & SDPC." },
+                { type: "thank-section", label: "Improved Thank You", content: `"Survival never looked so glamorous! Thank you, Cluster 2, for that incredible disco-powered resilience!"`, contentClass: "thank-text" }
+            ]
+        },
+        {
+            seqNum: "10",
+            header: { title: "Cluster 3", subtitle: "Song: Here Comes the Rain Again" },
+            sections: [
+                { type: "intro-section", label: "The Intro", content: `"You can’t have growth without a little rain. Let’s welcome our academics and researchers who nurture our community. Cluster 3!"`, deptList: "Featuring: VP-Academics & Research and Integrated School." },
+                { type: "thank-section", label: "Improved Thank You", content: `"That was refreshing! Thank you, Cluster 3, for washing away the challenges and bringing the growth!"`, contentClass: "thank-text" }
+            ]
+        },
+        {
+            seqNum: "11",
+            header: { title: "Cluster 4", subtitle: "Song: Rock and Roll" },
+            sections: [
+                { type: "intro-section", label: "The Intro", content: `"We built this institution on a solid foundation of faith... and a little bit of Rock and Roll! Get loud for Cluster 4!"`, deptList: "Featuring: VP-Academics & Research and all Colleges." },
+                { type: "thank-section", label: "Improved Thank You", content: `"You guys didn't just build this city; you rocked this ballroom! What an electric performance!"`, contentClass: "thank-text" }
+            ]
+        },
+        {
+            seqNum: "12",
+            header: { title: "Cluster 5", subtitle: "Songs: Staying Alive / Get Loud" },
+            sections: [
+                { type: "intro-section", label: "The Intro", content: `"It’s time for the grand finale of our musical show! They’re staying alive and they’re getting LOUD! Here is Cluster 5!"`, deptList: "Featuring: VP-IFM, DSA, Accounting, Property, MIS, & Maintenance teams." },
+                { type: "thank-section", label: "Improved Thank You", content: `"Now THAT is how you celebrate! Thank you, Cluster 5, for bringing the house down and the spirits up!"`, contentClass: "thank-text" }
+            ]
+        },
+        {
+            seqNum: "IX",
+            seqClass: "seq-num-top",
+            header: { title: "Holiday Small Wonders", subtitle: "MINOR RAFFLE DRAW" },
+            sections: [
+                { type: "intro-section", label: "The Script", content: `"Like the secret surprises hidden in our Christmas stockings, it’s time to reveal our <b>Minor Raffle winners!</b> Let’s share the spirit of giving and see whose Yuletide just got a little brighter. Erl, Rue, help me out—who's our first winner?"` },
+                { type: "thank-section", label: "Thank You", content: `"Congratulations to our winners! May these small wonders be just the beginning of your holiday blessings!"`, contentClass: "thank-text" }
+            ]
+        },
+        {
+            seqNum: "X",
+            seqClass: "seq-num-top",
+            header: { title: "Unwrapping the Unexpected", subtitle: "A CHRISTMAS MYSTERY PERFORMANCE" },
+            sections: [
+                { type: "bridge-section", label: "The Bridge", content: `"You know that feeling of looking at a mystery gift under the tree and wondering what’s inside? Well, it's time to find out!"`, contentClass: "bridge-text" },
+                { type: "intro-section", label: "The Script", content: `"We have a special 'gift' that isn't on your program. To add a dash of starlight to our evening, please put your hands together for this **Surprise Number!**"` }
+            ]
+        },
+        {
+            seqNum: "XI",
+            seqClass: "seq-num-top",
+            header: { title: "Big Dreams Under the Tree", subtitle: "MAJOR RAFFLE DRAW" },
+            sections: [
+                { type: "intro-section", label: "The Script", content: `"The cold breeze is outside, but the heat is definitely rising in here! It’s time for the big ones, UNO-R! We are drawing our **Major Prizes**. Dan, Mark, get that raffle drum spinning! Who’s ready to win big?"` },
+                { type: "thank-section", label: "Thank You", content: `"Wow! To our lucky Major winners—that is one way to have a Very Merry Christmas! Enjoy those incredible gifts!"`, contentClass: "thank-text" }
+            ]
+        },
+        {
+            seqNum: "XII",
+            seqClass: "seq-num-top",
+            header: { title: "A Heart Full of Gratitude", subtitle: "MESSAGE FROM THE CHAIR" },
+            sections: [
+                { type: "intro-section", label: "The Script", content: `"As we prepare to close the formal part of our evening, let’s look to the guiding star of this event. To share his final thoughts on how we ‘Rise and Rebuild,’ please welcome the Chair of the 2025 Party—<b>Rev. Fr. Romeo ben A. Potencio, Jr., OAR.</b>"` },
+                { type: "thank-section", label: "Thank You", content: `"Thank you, Fr. Ben! Your leadership has been the greatest ornament on our celebration tonight. We are truly grateful!"`, contentClass: "thank-text" }
+            ]
+        },
+        {
+            seqNum: "XIII",
+            seqClass: "seq-num-top",
+            header: { title: "The Star on Top of the Tree", subtitle: "GRAND RAFFLE DRAW" },
+            sections: [
+                { type: "bridge-section", label: "The Bridge", content: `"This is it... the moment that makes the reindeer fly and the sleigh bells ring!"`, contentClass: "bridge-text" },
+                { type: "intro-section", label: "The Script", content: `"The tension is thicker than kalamayhati! It is time for our **Grand Raffle Prize**. Who is going home with the ultimate holiday blessing tonight? Let’s find out!"` }
+            ]
+        },
+        {
+            seqNum: "XIV",
+            seqClass: "seq-num-top",
+            header: { title: "A Symphony of Recoleto Hearts", subtitle: "UNIFIED VOICES" },
+            sections: [
+                { type: "intro-section", label: "The Script", content: `"Before we dance, let’s harmonize. As one family, let us lift our voices and fill this hall with the music of unity. Please stand and join us for our **Community Singing!**"` }
+            ]
+        },
+        {
+            seqNum: "XV",
+            seqClass: "seq-num-top",
+            seqStyle: "color:var(--unor-gold)",
+            style: "background: var(--unor-blue);",
+            header: { title: "Let the Yuletide Magic Begin", titleStyle: "color:var(--unor-gold)", subtitle: "FINAL CELEBRATION", subtitleStyle: "color:white" },
+            sections: [
+                { style: "text-align:center; border:none; background:rgba(255,255,255,0.1);", content: `"Merry Christmas, UNO-R family!<br><br><b>PARTY! PARTY! PARTY!</b>"`, contentStyle: "font-size: 1.8rem; color:var(--unor-gold); font-weight:800;" }
+            ]
+        }
+    ];
+
+    function renderMainSlider() {
+        slider.innerHTML = scriptData.map(slide => {
+            const seqClass = slide.seqClass || "seq-num";
+            const seqStyle = slide.seqStyle || "";
+            const slideStyle = slide.style || "";
+            
+            let headerHTML = `<div class="header"><h2>`;
+            if (slide.header.badge) headerHTML += `<span class="vo-badge">${slide.header.badge}</span> `;
+            headerHTML += `<span style="${slide.header.titleStyle || ''}">${slide.header.title}</span></h2>`;
+            headerHTML += `<p style="${slide.header.subtitleStyle || ''}">${slide.header.subtitle}</p></div>`;
+
+            let sectionsHTML = slide.sections.map(section => {
+                const contentClass = section.contentClass || "";
+                const deptListHTML = section.deptList ? `<div class="dept-list">${section.deptList}</div>` : "";
+                return `
+                <div class="section ${section.type || ''}" style="${section.style || ''}">
+                    ${section.label ? `<span class="label">${section.label}</span>` : ''}
+                    <div class="content ${contentClass}" style="${section.contentStyle || ''}">${section.content}</div>
+                    ${deptListHTML}
+                </div>`;
+            }).join('');
+
+            return `
+            <div class="slide" style="${slideStyle}">
+                <div class="${seqClass}" style="${seqStyle}">${slide.seqNum}</div>
+                ${headerHTML}
+                ${sectionsHTML}
+            </div>`;
+        }).join('');
+    }
+
+    // Initial Render
+    renderMainSlider();
+
+    // Slide Manager Logic
+    let currentEditIndex = -1;
+
+    function openSlideManager() {
+        const grid = document.getElementById('slideList');
+        grid.innerHTML = '';
+        scriptData.forEach((slide, index) => {
+            const card = document.createElement('div');
+            card.className = 'manager-card';
+            card.innerHTML = `<h4>${slide.seqNum}</h4><p>${slide.header.title}</p>`;
+            card.onclick = () => openEditModal(index);
+            grid.appendChild(card);
+        });
+        document.getElementById('managerModal').style.display = 'block';
+    }
+
+    function openEditModal(index) {
+        currentEditIndex = index;
+        const slide = scriptData[index];
+        const form = document.getElementById('editForm');
+        
+        // Escape quotes to prevent syntax errors in template literal
+        const safeTitle = slide.header.title.replace(/"/g, '&quot;');
+        const safeSubtitle = slide.header.subtitle.replace(/"/g, '&quot;');
+
+        form.innerHTML = `
+            <div class="form-group"><label>Title</label><input type="text" id="editTitle" value="${safeTitle}"></div>
+            <div class="form-group"><label>Subtitle</label><input type="text" id="editSubtitle" value="${safeSubtitle}"></div>
+        `;
+
+        slide.sections.forEach((section, sIndex) => {
+            form.innerHTML += `
+                <div class="form-group">
+                    <label>Section ${sIndex + 1} Content</label>
+                    <textarea id="editSection${sIndex}">${section.content}</textarea>
+                </div>
+            `;
+        });
+
+        document.getElementById('editModal').style.display = 'block';
+    }
+
+    function saveSlide() {
+        if (currentEditIndex === -1) return;
+        const slide = scriptData[currentEditIndex];
+        slide.header.title = document.getElementById('editTitle').value;
+        slide.header.subtitle = document.getElementById('editSubtitle').value;
+        
+        slide.sections.forEach((section, sIndex) => {
+            const input = document.getElementById(`editSection${sIndex}`);
+            if (input) section.content = input.value;
+        });
+
+        renderMainSlider();
+        closeModal('editModal');
+        openSlideManager();
+    }
+
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    window.onclick = function(e) { if (e.target.classList.contains('modal')) e.target.style.display = "none"; }
 </script>
 <div class="progress-nav"><div class="progress-bar" id="progressBar"></div></div>
 </body>
