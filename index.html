@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UNO-R Master Digital Script 2025</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         :root {
             --unor-blue: #002D62;
@@ -247,7 +250,35 @@
         slider.scrollBy({ left: direction * slider.clientWidth, behavior: 'smooth' });
     }
 
-    const scriptData = [
+    // Firebase Configuration
+    const firebaseConfig = {
+
+    apiKey: "AIzaSyB-6OZBYnTJAQXHlDwmZ5G47OGSaY6zc4I",
+
+    authDomain: "uno-r-xmas-script.firebaseapp.com",
+
+    projectId: "uno-r-xmas-script",
+
+    storageBucket: "uno-r-xmas-script.firebasestorage.app",
+
+    messagingSenderId: "852772658090",
+
+    appId: "1:852772658090:web:e1910235ee02c96f7c29d3"
+
+    };
+
+
+    // Initialize Firebase
+    let db;
+    try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+    } catch (e) {
+        console.error("Firebase init error. Check config.", e);
+    }
+
+    let scriptData = [];
+    const defaultScriptData = [
         {
             seqNum: "01",
             style: "background: var(--vo-gray);",
@@ -411,6 +442,32 @@
         }
     ];
 
+    function loadFromFirebase() {
+        if (!db) {
+            console.warn("Firebase not configured. Using default data.");
+            scriptData = JSON.parse(JSON.stringify(defaultScriptData));
+            renderMainSlider();
+            return;
+        }
+
+        db.collection("events").doc("xmas2025").onSnapshot((doc) => {
+            if (doc.exists) {
+                scriptData = doc.data().slides;
+            } else {
+                scriptData = JSON.parse(JSON.stringify(defaultScriptData));
+                saveToFirebase();
+            }
+            renderMainSlider();
+            if(document.getElementById('managerModal').style.display === 'block') {
+                openSlideManager();
+            }
+        });
+    }
+
+    function saveToFirebase() {
+        if (db) db.collection("events").doc("xmas2025").set({ slides: scriptData });
+    }
+
     function renderMainSlider() {
         slider.innerHTML = scriptData.map(slide => {
             const seqClass = slide.seqClass || "seq-num";
@@ -443,7 +500,7 @@
     }
 
     // Initial Render
-    renderMainSlider();
+    loadFromFirebase();
 
     // Slide Manager Logic
     let currentEditIndex = -1;
@@ -482,6 +539,7 @@
         const temp = scriptData[index];
         scriptData[index] = scriptData[index + direction];
         scriptData[index + direction] = temp;
+        saveToFirebase();
         renderMainSlider();
         openSlideManager();
     }
@@ -489,6 +547,7 @@
     function deleteSlide(index) {
         if(confirm('Delete this slide?')) {
             scriptData.splice(index, 1);
+            saveToFirebase();
             renderMainSlider();
             openSlideManager();
         }
@@ -496,6 +555,7 @@
 
     function addNewSlide() {
         scriptData.push({ seqNum: "NEW", style: "", header: { title: "New Slide", subtitle: "Subtitle" }, sections: [{ type: "intro-section", label: "Content", content: "Enter text here..." }] });
+        saveToFirebase();
         renderMainSlider();
         openSlideManager();
     }
@@ -593,6 +653,7 @@
             slide.sections.push(newSection);
         });
 
+        saveToFirebase();
         renderMainSlider();
         closeModal('editModal');
         openSlideManager();
