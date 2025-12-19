@@ -188,6 +188,7 @@
         .manager-card h4 { margin: 0 0 5px 0; font-size: 0.9rem; color: var(--unor-blue); }
         .manager-card p { margin: 0; font-size: 0.7rem; color: #666; }
 
+        .speakers-info { font-size: 0.9rem; color: var(--unor-gold); font-weight: bold; margin-bottom: 15px; font-style: italic; display: block; }
         /* Toggle UI Button */
         .toggle-btn {
             position: fixed;
@@ -252,9 +253,14 @@
     <div class="modal-content">
         <span class="close" onclick="closeModal('managerModal')">&times;</span>
         <h2>Slide Manager</h2>
+        <div style="margin-bottom: 15px; text-align: right;">
+            <button class="btn-save" onclick="exportJSON()">&#128229; Export JSON</button>
+            <button class="btn-save" onclick="document.getElementById('importFile').click()" style="background: #3498db;">&#128228; Import JSON</button>
+        </div>
         <div id="slideList" class="slide-list-grid"></div>
     </div>
 </div>
+<input type="file" id="importFile" style="display: none;" accept=".json" onchange="importJSON(event)">
 
 <div id="editModal" class="modal">
     <div class="modal-content">
@@ -549,6 +555,7 @@
             if (slide.header.badge) headerHTML += `<span class="vo-badge">${slide.header.badge}</span> `;
             headerHTML += `<span style="${slide.header.titleStyle || ''}">${slide.header.title}</span></h2>`;
             headerHTML += `<p style="${slide.header.subtitleStyle || ''}">${slide.header.subtitle}</p></div>`;
+            let speakersHTML = slide.speakers ? `<div class="speakers-info">🎤 ${slide.speakers}</div>` : "";
 
             let sectionsHTML = slide.sections.map(section => {
                 const contentClass = section.contentClass || "";
@@ -565,6 +572,7 @@
             <div class="slide" style="${slideStyle}">
                 <div class="${seqClass}" style="${seqStyle}">${slide.seqNum}</div>
                 ${headerHTML}
+                ${speakersHTML}
                 ${sectionsHTML}
             </div>`;
         }).join('');
@@ -631,6 +639,42 @@
         openSlideManager();
     }
 
+    function exportJSON() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(scriptData, null, 2));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        const date = new Date();
+        const timestamp = date.getFullYear() + "-" + (date.getMonth() + 1).toString().padStart(2, '0') + "-" + date.getDate().toString().padStart(2, '0') + "_" + date.getHours().toString().padStart(2, '0') + "-" + date.getMinutes().toString().padStart(2, '0') + "-" + date.getSeconds().toString().padStart(2, '0');
+        downloadAnchorNode.setAttribute("download", `${timestamp}_script_data.json`);
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    }
+
+    function importJSON(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const json = JSON.parse(e.target.result);
+                if (Array.isArray(json)) {
+                    scriptData = json;
+                    saveToFirebase();
+                    renderMainSlider();
+                    openSlideManager();
+                    alert("Import successful!");
+                } else {
+                    alert("Invalid JSON format: Expected an array.");
+                }
+            } catch (err) {
+                alert("Error parsing JSON: " + err.message);
+            }
+            event.target.value = ''; // Reset input
+        };
+        reader.readAsText(file);
+    }
+
     function openEditModal(index) {
         currentEditIndex = index;
         const slide = scriptData[index];
@@ -639,10 +683,12 @@
         // Escape quotes to prevent syntax errors in template literal
         const safeTitle = slide.header.title.replace(/"/g, '&quot;');
         const safeSubtitle = slide.header.subtitle.replace(/"/g, '&quot;');
+        const safeSpeakers = (slide.speakers || "").replace(/"/g, '&quot;');
 
         form.innerHTML = `
             <div class="form-group"><label>Title</label><input type="text" id="editTitle" value="${safeTitle}"></div>
             <div class="form-group"><label>Subtitle</label><input type="text" id="editSubtitle" value="${safeSubtitle}"></div>
+            <div class="form-group"><label>Speakers/Hosts</label><input type="text" id="editSpeakers" value="${safeSpeakers}" placeholder="e.g. Erl, Rue"></div>
             <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
             <div id="sectionsContainer"></div>
             <button type="button" class="add-slide-btn" style="min-height: 40px; margin-top: 10px; width: 100%;" onclick="addSectionToModal()">+ Add Section</button>
@@ -699,6 +745,7 @@
         const slide = scriptData[currentEditIndex];
         slide.header.title = document.getElementById('editTitle').value;
         slide.header.subtitle = document.getElementById('editSubtitle').value;
+        slide.speakers = document.getElementById('editSpeakers').value;
         
         // Rebuild sections array from DOM
         slide.sections = [];
