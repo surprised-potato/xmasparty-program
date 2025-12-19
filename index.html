@@ -109,6 +109,38 @@
             .nav-arrow { display: none; }
             .seq-num { right: 30px; font-size: 2rem; }
         }
+
+        /* Print Button */
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            background: var(--unor-gold);
+            color: var(--unor-blue);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        @media print {
+            .print-btn, .nav-arrow, .progress-nav { display: none !important; }
+            body, html { height: auto; overflow: visible; background: white; }
+            .slider { display: block; height: auto; overflow: visible; width: 100%; }
+            .slide {
+                width: 100%; height: auto; page-break-inside: avoid; break-inside: avoid;
+                border-bottom: 1px solid #ccc; margin-bottom: 20px; padding: 20px;
+                color: black; background: white !important; flex: none; display: block;
+            }
+            .content, .header h2, .header p, .label, .dept-list { color: black !important; }
+            .seq-num, .seq-num-top { color: #ddd !important; text-shadow: none; position: relative; top: auto; right: auto; left: auto; float: right; font-size: 1.5rem; background: none; padding: 0; }
+            .section { background: none; border: 1px solid #eee; padding: 10px; }
+            .bridge-text { color: #d35400 !important; } .thank-text { color: #27ae60 !important; }
+        }
     </style>
 </head>
 <body>
@@ -116,6 +148,7 @@
 
 <div class="nav-arrow prev" onclick="moveSlide(-1)">&#10094;</div>
 <div class="nav-arrow next" onclick="moveSlide(1)">&#10095;</div>
+<button class="print-btn" onclick="window.print()">&#128424; Print Script</button>
 
 <div class="slider" id="slider">
     
