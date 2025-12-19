@@ -150,15 +150,25 @@
         .close:hover { color: black; }
         
         .slide-list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; margin-top: 20px; }
-        .manager-card { background: #eee; padding: 15px; border-radius: 8px; cursor: pointer; transition: transform 0.2s; border: 2px solid transparent; }
+        .manager-card { background: #eee; padding: 10px; border-radius: 8px; transition: transform 0.2s; border: 2px solid transparent; display: flex; flex-direction: column; justify-content: space-between; min-height: 140px; }
         .manager-card:hover { transform: scale(1.05); border-color: var(--unor-blue); }
+        .manager-card-content { cursor: pointer; flex-grow: 1; }
+        .card-controls { display: flex; justify-content: space-between; margin-top: 10px; border-top: 1px solid #ccc; padding-top: 5px; }
+        .card-controls button { background: none; border: none; cursor: pointer; font-size: 1.2rem; padding: 0 5px; color: #555; }
+        .card-controls button:hover { color: var(--unor-blue); transform: scale(1.2); }
+        .card-controls button:disabled { color: #ccc; cursor: default; transform: none; }
+        .btn-delete:hover { color: #c0392b !important; }
+        .add-slide-btn { display: flex; align-items: center; justify-content: center; background: white; border: 2px dashed #ccc; color: #888; font-weight: bold; cursor: pointer; min-height: 140px; border-radius: 8px; transition: all 0.2s; }
+        .add-slide-btn:hover { border-color: var(--unor-blue); color: var(--unor-blue); background: #f0f8ff; }
         .manager-card h4 { margin: 0 0 5px 0; font-size: 0.9rem; color: var(--unor-blue); }
         .manager-card p { margin: 0; font-size: 0.7rem; color: #666; }
 
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
-        .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
         .form-group textarea { resize: vertical; min-height: 80px; }
+        .section-edit-group { background: #f9f9f9; padding: 15px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px; position: relative; }
+        .btn-remove-section { position: absolute; top: 10px; right: 10px; color: #c0392b; background: none; border: none; font-size: 1.2rem; cursor: pointer; }
         
         .modal-actions { text-align: right; margin-top: 20px; }
         .modal-actions button { padding: 8px 16px; margin-left: 10px; cursor: pointer; border-radius: 4px; border: none; font-weight: bold; }
@@ -213,6 +223,8 @@
 <div class="slider" id="slider">
     <!-- Content will be injected via JavaScript -->
 </div>
+
+<div class="progress-nav"><div class="progress-bar" id="progressBar"></div></div>
 
 <script>
     const slider = document.getElementById('slider');
@@ -442,11 +454,50 @@
         scriptData.forEach((slide, index) => {
             const card = document.createElement('div');
             card.className = 'manager-card';
-            card.innerHTML = `<h4>${slide.seqNum}</h4><p>${slide.header.title}</p>`;
-            card.onclick = () => openEditModal(index);
+            card.innerHTML = `
+                <div class="manager-card-content" onclick="openEditModal(${index})">
+                    <h4>${slide.seqNum}</h4>
+                    <p>${slide.header.title}</p>
+                </div>
+                <div class="card-controls">
+                    <button onclick="moveSlideOrder(${index}, -1)" ${index === 0 ? 'disabled' : ''} title="Move Left">&#9664;</button>
+                    <button class="btn-delete" onclick="deleteSlide(${index})" title="Delete">&#128465;</button>
+                    <button onclick="moveSlideOrder(${index}, 1)" ${index === scriptData.length - 1 ? 'disabled' : ''} title="Move Right">&#9654;</button>
+                </div>
+            `;
             grid.appendChild(card);
         });
+        
+        const addBtn = document.createElement('div');
+        addBtn.className = 'add-slide-btn';
+        addBtn.innerHTML = '+ Add Slide';
+        addBtn.onclick = addNewSlide;
+        grid.appendChild(addBtn);
+
         document.getElementById('managerModal').style.display = 'block';
+    }
+
+    function moveSlideOrder(index, direction) {
+        if (index + direction < 0 || index + direction >= scriptData.length) return;
+        const temp = scriptData[index];
+        scriptData[index] = scriptData[index + direction];
+        scriptData[index + direction] = temp;
+        renderMainSlider();
+        openSlideManager();
+    }
+
+    function deleteSlide(index) {
+        if(confirm('Delete this slide?')) {
+            scriptData.splice(index, 1);
+            renderMainSlider();
+            openSlideManager();
+        }
+    }
+
+    function addNewSlide() {
+        scriptData.push({ seqNum: "NEW", style: "", header: { title: "New Slide", subtitle: "Subtitle" }, sections: [{ type: "intro-section", label: "Content", content: "Enter text here..." }] });
+        renderMainSlider();
+        openSlideManager();
     }
 
     function openEditModal(index) {
@@ -461,18 +512,55 @@
         form.innerHTML = `
             <div class="form-group"><label>Title</label><input type="text" id="editTitle" value="${safeTitle}"></div>
             <div class="form-group"><label>Subtitle</label><input type="text" id="editSubtitle" value="${safeSubtitle}"></div>
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+            <div id="sectionsContainer"></div>
+            <button type="button" class="add-slide-btn" style="min-height: 40px; margin-top: 10px; width: 100%;" onclick="addSectionToModal()">+ Add Section</button>
         `;
 
+        const container = document.getElementById('sectionsContainer');
         slide.sections.forEach((section, sIndex) => {
-            form.innerHTML += `
-                <div class="form-group">
-                    <label>Section ${sIndex + 1} Content</label>
-                    <textarea id="editSection${sIndex}">${section.content}</textarea>
-                </div>
-            `;
+            addSectionToModal(section);
         });
 
         document.getElementById('editModal').style.display = 'block';
+    }
+
+    function addSectionToModal(section = null) {
+        const container = document.getElementById('sectionsContainer');
+        const div = document.createElement('div');
+        div.className = 'section-edit-group';
+        
+        const data = section || { type: 'intro-section', label: 'The Script', content: '' };
+        
+        const types = [
+            { val: 'intro-section', txt: 'Intro (Blue)' },
+            { val: 'bridge-section', txt: 'Bridge (Orange)' },
+            { val: 'thank-section', txt: 'Thank You (Green)' },
+            { val: 'section', txt: 'Generic' }
+        ];
+        
+        const options = types.map(t => `<option value="${t.val}" ${data.type === t.val ? 'selected' : ''}>${t.txt}</option>`).join('');
+
+        div.innerHTML = `
+            <button type="button" class="btn-remove-section" onclick="this.parentElement.remove()" title="Remove Section">&#128465;</button>
+            <div class="form-group">
+                <label>Type</label>
+                <select class="section-type-select">${options}</select>
+            </div>
+            <div class="form-group">
+                <label>Label</label>
+                <input type="text" class="section-label-input" value="${data.label || ''}">
+            </div>
+            <div class="form-group">
+                <label>Content</label>
+                <textarea class="section-content-input">${data.content || ''}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Dept. List (Optional)</label>
+                <input type="text" class="section-dept-input" value="${data.deptList || ''}">
+            </div>
+        `;
+        container.appendChild(div);
     }
 
     function saveSlide() {
@@ -481,9 +569,28 @@
         slide.header.title = document.getElementById('editTitle').value;
         slide.header.subtitle = document.getElementById('editSubtitle').value;
         
-        slide.sections.forEach((section, sIndex) => {
-            const input = document.getElementById(`editSection${sIndex}`);
-            if (input) section.content = input.value;
+        // Rebuild sections array from DOM
+        slide.sections = [];
+        const sectionGroups = document.querySelectorAll('.section-edit-group');
+        sectionGroups.forEach(group => {
+            const type = group.querySelector('.section-type-select').value;
+            const label = group.querySelector('.section-label-input').value;
+            const content = group.querySelector('.section-content-input').value;
+            const deptList = group.querySelector('.section-dept-input').value;
+            
+            let contentClass = "";
+            if (type === 'bridge-section') contentClass = "bridge-text";
+            if (type === 'thank-section') contentClass = "thank-text";
+
+            const newSection = {
+                type: type,
+                label: label,
+                content: content,
+                contentClass: contentClass
+            };
+            if(deptList) newSection.deptList = deptList;
+            
+            slide.sections.push(newSection);
         });
 
         renderMainSlider();
@@ -494,6 +601,5 @@
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     window.onclick = function(e) { if (e.target.classList.contains('modal')) e.target.style.display = "none"; }
 </script>
-<div class="progress-nav"><div class="progress-bar" id="progressBar"></div></div>
 </body>
 </html>
