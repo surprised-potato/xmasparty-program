@@ -407,6 +407,13 @@
         document.getElementById('statusTitle').innerText = title;
         document.getElementById('statusMessage').innerText = message;
         document.getElementById('statusModal').style.display = 'block';
+        
+        // Reset buttons to be visible by default
+        const modal = document.getElementById('statusModal');
+        const closeBtn = modal.querySelector('.close');
+        const okBtn = modal.querySelector('button');
+        if (closeBtn) closeBtn.style.display = 'block';
+        if (okBtn) okBtn.style.display = 'inline-block';
     }
 
     function loadFromFirebase() {
@@ -437,9 +444,17 @@
             }
         }, (error) => {
             console.error("Firebase Error:", error);
-            showStatusModal("Error", "Failed to connect: " + error.message);
-            // Load default data locally only
-            scriptData = JSON.parse(JSON.stringify(defaultScriptData));
+            showStatusModal("Connection Failed", "Critical Error: Could not connect to Firebase.\n\nThe application has been stopped to prevent data loss or conflicts.\n\nError: " + error.message + "\n\nPlease check your internet connection and refresh the page.");
+            
+            // Lock the modal (hide close buttons) so user cannot proceed
+            const modal = document.getElementById('statusModal');
+            const closeBtn = modal.querySelector('.close');
+            const okBtn = modal.querySelector('button');
+            if (closeBtn) closeBtn.style.display = 'none';
+            if (okBtn) okBtn.style.display = 'none';
+
+            // Clear data
+            scriptData = [];
             renderMainSlider();
         });
     }
