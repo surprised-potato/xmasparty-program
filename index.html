@@ -30,7 +30,13 @@
             z-index: 1000; 
         }
         
-        .progress-bar { height: 100%; background: var(--unor-gold); width: 0%; transition: width 0.3s ease; }
+        .progress-bar { 
+            height: 100%; 
+            background: #FFD700; /* Gold Color */
+            width: 0%;           /* Start at zero */
+            transition: width 0.2s ease-out; 
+            box-shadow: 0 0 10px #FFD700; 
+        }
 
         /* Nav Arrows */
         .nav-arrow { position: fixed; top: 50%; transform: translateY(-50%); background: rgba(255, 215, 0, 0.2); color: var(--unor-gold); border: 2px solid var(--unor-gold); padding: 15px; border-radius: 50%; cursor: pointer; z-index: 1001; font-size: 1.5rem; width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; }
@@ -257,42 +263,84 @@
             <div class="content thank-text">"Now THAT is how you celebrate! Thank you, Cluster 5, for bringing the house down and the spirits up!"</div>
         </div>
     </div>
-
     <div class="slide">
-        <div class="seq-num">13</div>
-        <div class="header"><h2>The Big Wins</h2><p>Surprise & Major Raffles</p></div>
+        <div class="header"><h2>Minor Raffle Prizes</h2><p>SEQ 13</p></div>
         <div class="section intro-section">
-            <span class="label">The Intro</span>
-            <div class="content">"The show was spectacular, but how about a **Surprise Number**? And right after, grab your tickets—we are drawing the **Major Prizes!**"</div>
+            <span class="label">Introduction</span>
+            <div class="content">"The show was spectacular, but the gifts are just as exciting! Let’s keep the momentum going with our <b>Raffle of Minor Prizes</b>. Keep those tickets close!"</div>
         </div>
         <div class="section thank-section">
-            <span class="label">Improved Thank You</span>
-            <div class="content thank-text">"What a surprise! And to our winners—your Christmas list just got a lot shorter. Congratulations!"</div>
+            <span class="label">Thank You</span>
+            <div class="content thank-text">"Congratulations to all our winners! May these gifts add a little extra sparkle to your Christmas!"</div>
         </div>
     </div>
 
     <div class="slide">
-        <div class="seq-num">14</div>
-        <div class="header"><h2>A Final Word</h2><p>Closing Remarks</p></div>
+        <div class="header"><h2>Surprise Number</h2><p>SEQ 14</p></div>
+        <div class="section bridge-section">
+            <span class="label">The Bridge</span>
+            <div class="content bridge-text">"Just when you thought you’d seen it all, we have a little holiday secret to share..."</div>
+        </div>
         <div class="section intro-section">
-            <span class="label">The Intro</span>
-            <div class="content">"To wrap up our formal proceedings with a grateful heart, let’s welcome the Chair of the 2025 Party, <b>Rev. Fr. Romeo Ben A. Potencio, Jr., OAR.</b>"</div>
+            <span class="label">Introduction</span>
+            <div class="content">"Please get ready and put your hands together for a very special <b>Surprise Number</b> prepared just for tonight!"</div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <div class="header"><h2>Major Raffle Prizes</h2><p>SEQ 15</p></div>
+        <div class="section intro-section">
+            <span class="label">Introduction</span>
+            <div class="content">"It’s the moment many of you have been waiting for! The stakes are getting higher. It’s time for the <b>Raffle of Major Prizes!</b>"</div>
         </div>
         <div class="section thank-section">
-            <span class="label">Improved Thank You</span>
-            <div class="content thank-text">"Thank you, Fr. Ben! This night was a gift to us all, wrapped in your dedication and vision."</div>
+            <span class="label">Thank You</span>
+            <div class="content thank-text">"Wow! To our major prize winners—what a way to celebrate the season! Congratulations!"</div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <div class="header"><h2>Closing Remarks</h2><p>SEQ 16</p></div>
+        <div class="section intro-section">
+            <span class="label">Introduction</span>
+            <div class="content">"To wrap up our formal proceedings with a grateful heart, let’s welcome the man behind the vision of this celebration, the Chair of the Institutional Christmas Party 2025—<b>Rev. Fr. Romeo ben A. Potencio, Jr., OAR.</b>"</div>
+        </div>
+        <div class="section thank-section">
+            <span class="label">Thank You</span>
+            <div class="content thank-text">"Thank you, Fr. Ben! We are truly inspired by your leadership and the success of this gathering."</div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <div class="header"><h2>The Grand Prize</h2><p>SEQ 17</p></div>
+        <div class="section bridge-section">
+            <span class="label">The Bridge</span>
+            <div class="content bridge-text">"We have saved the biggest gift for last. The tension is in the air!"</div>
+        </div>
+        <div class="section intro-section">
+            <span class="label">Introduction</span>
+            <div class="content">"It is finally time! Who will be the lucky Recoleto to take home our **Grand Prize** tonight? Let’s draw the winner!"</div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <div class="header"><h2>Community Singing</h2><p>SEQ 18</p></div>
+        <div class="section bridge-section">
+            <span class="label">The Bridge</span>
+            <div class="content bridge-text">"As we celebrate the winners, let us celebrate our unity as one UNO-R family."</div>
+        </div>
+        <div class="section intro-section">
+            <span class="label">Introduction</span>
+            <div class="content">"Please stand and join us as we lift our voices together for our <b>Community Singing</b>. Let’s fill this room with the harmony of Christmas!"</div>
         </div>
     </div>
 
     <div class="slide" style="background: var(--unor-blue);">
-        <div class="seq-num" style="color:rgba(255,215,0,0.2)">15</div>
-        <div class="header"><h2 style="color:var(--unor-gold)">The Grand Finale</h2><p style="color:white">Grand Raffle & Party-Party-Party!</p></div>
-        <div class="section intro-section" style="background:rgba(255,255,255,0.1); border-left-color:var(--unor-gold)">
-            <span class="label" style="color:var(--unor-gold)">One Last Ticket</span>
-            <div class="content">"It’s the moment of truth—the **Grand Raffle Prize!** And after that, everyone, let's lift our voices for our Community Singing!"</div>
-        </div>
-        <div class="section" style="text-align:center; border:none;">
-            <div class="content" style="font-size: 1.8rem; color:var(--unor-gold); font-weight:800; text-shadow: 2px 2px 10px rgba(0,0,0,0.5);">"Merry Christmas UNO-R!<br>LET'S PARTY! PARTY! PARTY!"</div>
+        <div class="header"><h2 style="color:var(--unor-gold)">The Grand Celebration</h2><p style="color:white">FINAL SEQUENCE</p></div>
+        <div class="section" style="text-align:center; border:none; background:rgba(255,255,255,0.1);">
+            <div class="content" style="font-size: 1.8rem; color:var(--unor-gold); font-weight:800; text-shadow: 2px 2px 10px rgba(0,0,0,0.5);">
+                "Merry Christmas, UNO-R family!<br><br><b>PARTY! PARTY! PARTY!</b>"
+            </div>
         </div>
     </div>
 
@@ -301,23 +349,23 @@
 <script>
     const slider = document.getElementById('slider');
     const progressBar = document.getElementById('progressBar');
-    const totalSlides = 15;
 
+    // This listens specifically for the horizontal swipe
     slider.addEventListener('scroll', () => {
-        const scrollPercentage = (slider.scrollLeft / (slider.scrollWidth - slider.clientWidth)) * 100;
-        progressBar.style.width = scrollPercentage + '%';
+        const scrollLeft = slider.scrollLeft;
+        const maxScroll = slider.scrollWidth - slider.clientWidth;
+        
+        if (maxScroll > 0) {
+            // Calculate progress percentage
+            const percentage = (scrollLeft / maxScroll) * 100;
+            // Update the width of the gold bar
+            progressBar.style.width = percentage + '%';
+        }
     });
 
     function moveSlide(direction) {
-        const slideWidth = slider.clientWidth;
-        slider.scrollBy({ left: direction * slideWidth, behavior: 'smooth' });
+        slider.scrollBy({ left: direction * slider.clientWidth, behavior: 'smooth' });
     }
-
-    // Keyboard navigation
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight') moveSlide(1);
-        if (e.key === 'ArrowLeft') moveSlide(-1);
-    });
 </script>
 <div class="progress-nav"><div class="progress-bar" id="progressBar"></div></div>
 </body>
