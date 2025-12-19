@@ -139,7 +139,7 @@
         .print-btn {
             position: fixed;
             top: 20px;
-            right: 20px;
+            left: 20px;
             z-index: 2000;
             background: var(--unor-gold);
             color: var(--unor-blue);
@@ -156,7 +156,7 @@
         .manager-btn {
             position: fixed;
             top: 70px;
-            right: 20px;
+            left: 20px;
             z-index: 2000;
             background: var(--unor-blue);
             color: var(--unor-gold);
@@ -193,7 +193,7 @@
         .toggle-btn {
             position: fixed;
             top: 120px;
-            right: 20px;
+            left: 20px;
             z-index: 2000;
             background: rgba(0, 0, 0, 0.5);
             color: white;
@@ -210,11 +210,62 @@
         }
         .toggle-btn:hover { background: rgba(0, 0, 0, 0.8); border-color: white; }
 
+        /* Inline Edit Styles */
+        .section { position: relative; }
+        .section-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+            z-index: 10;
+        }
+        .inline-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--unor-gold);
+            cursor: pointer;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .inline-btn:hover { opacity: 1; background: rgba(255, 255, 255, 0.3); }
+        .inline-btn.save-mode { background: var(--festive-green); color: white; opacity: 1; }
+        .inline-btn.delete-mode:hover { background: #c0392b; color: white; }
+
+        .slide-controls { margin-top: 20px; text-align: center; padding-bottom: 20px; }
+        .btn-add-section {
+            background: rgba(255, 255, 255, 0.05); border: 1px dashed var(--unor-gold); color: var(--unor-gold);
+            padding: 8px 15px; border-radius: 20px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-size: 0.8rem; transition: all 0.3s;
+        }
+        .btn-add-section:hover { background: rgba(255, 255, 255, 0.15); }
+
+        .content[contenteditable="true"] {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            outline: 2px solid var(--unor-gold);
+            min-height: 50px;
+        }
+
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
         .form-group textarea { resize: vertical; min-height: 80px; }
         .section-edit-group { background: #f9f9f9; padding: 15px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px; position: relative; }
+        
+        /* WYSIWYG Styles */
+        .wysiwyg-container { border: 1px solid #ccc; border-radius: 4px; overflow: hidden; background: white; }
+        .wysiwyg-toolbar { background: #f1f1f1; border-bottom: 1px solid #ccc; padding: 5px; display: flex; gap: 5px; }
+        .wysiwyg-toolbar button { background: white; border: 1px solid #ccc; cursor: pointer; padding: 5px 10px; font-weight: bold; border-radius: 3px; font-size: 14px; }
+        .wysiwyg-toolbar button:hover { background: #e1e1e1; }
+        .wysiwyg-content { padding: 10px; min-height: 80px; outline: none; font-family: inherit; color: #333; }
+
         .btn-remove-section { position: absolute; top: 10px; right: 10px; color: #c0392b; background: none; border: none; font-size: 1.2rem; cursor: pointer; }
         
         .modal-actions { text-align: right; margin-bottom: 20px; }
@@ -223,7 +274,7 @@
         .btn-cancel { background: #c0392b; color: white; }
 
         @media print {
-            .print-btn, .manager-btn, .toggle-btn, .nav-arrow, .progress-nav, .modal { display: none !important; }
+            .print-btn, .manager-btn, .toggle-btn, .nav-arrow, .progress-nav, .modal, .section-controls, .slide-controls { display: none !important; }
             body, html { height: auto; overflow: visible; background: white; }
             .slider { display: block; height: auto; overflow: visible; width: 100%; }
             .slide {
@@ -546,27 +597,48 @@
     }
 
     function renderMainSlider() {
-        slider.innerHTML = scriptData.map(slide => {
+        slider.innerHTML = scriptData.map((slide, slideIndex) => {
             const seqClass = slide.seqClass || "seq-num";
             const seqStyle = slide.seqStyle || "";
             const slideStyle = slide.style || "";
             
-            let headerHTML = `<div class="header"><h2>`;
+            let headerHTML = `<div class="header" style="position:relative;">`;
+            headerHTML += `<div class="section-controls" style="top:0; right:0;">
+                <button class="inline-btn" onclick="toggleHeaderEdit(${slideIndex}, this)">✎</button>
+            </div>`;
+            headerHTML += `<h2>`;
             if (slide.header.badge) headerHTML += `<span class="vo-badge">${slide.header.badge}</span> `;
-            headerHTML += `<span style="${slide.header.titleStyle || ''}">${slide.header.title}</span></h2>`;
-            headerHTML += `<p style="${slide.header.subtitleStyle || ''}">${slide.header.subtitle}</p></div>`;
-            let speakersHTML = slide.speakers ? `<div class="speakers-info">🎤 ${slide.speakers}</div>` : "";
+            headerHTML += `<span id="title-${slideIndex}" style="${slide.header.titleStyle || ''}">${slide.header.title}</span></h2>`;
+            headerHTML += `<p id="subtitle-${slideIndex}" style="${slide.header.subtitleStyle || ''}">${slide.header.subtitle}</p></div>`;
+            
+            let speakersHTML = "";
+            if (slide.speakers) {
+                speakersHTML = `<div class="speakers-info" style="position:relative;">
+                    <div class="section-controls" style="top:-5px; right:0;">
+                        <button class="inline-btn" onclick="toggleSpeakerEdit(${slideIndex}, this)">✎</button>
+                    </div>
+                    🎤 <span id="speakers-${slideIndex}">${slide.speakers}</span>
+                </div>`;
+            }
 
-            let sectionsHTML = slide.sections.map(section => {
+            let sectionsHTML = slide.sections.map((section, sectionIndex) => {
                 const contentClass = section.contentClass || "";
                 const deptListHTML = section.deptList ? `<div class="dept-list">${section.deptList}</div>` : "";
                 return `
                 <div class="section ${section.type || ''}" style="${section.style || ''}">
-                    ${section.label ? `<span class="label">${section.label}</span>` : ''}
-                    <div class="content ${contentClass}" style="${section.contentStyle || ''}">${section.content}</div>
+                    <div class="section-controls">
+                        <button class="inline-btn" onclick="toggleInlineEdit(${slideIndex}, ${sectionIndex}, this)">✎</button>
+                        <button class="inline-btn delete-mode" onclick="deleteSectionInline(${slideIndex}, ${sectionIndex})">🗑</button>
+                    </div>
+                    ${section.label ? `<span class="label" id="label-${slideIndex}-${sectionIndex}">${section.label}</span>` : ''}
+                    <div class="content ${contentClass}" id="content-${slideIndex}-${sectionIndex}" style="${section.contentStyle || ''}">${section.content}</div>
                     ${deptListHTML}
                 </div>`;
             }).join('');
+
+            sectionsHTML += `<div class="slide-controls">
+                <button class="btn-add-section" onclick="addSectionInline(${slideIndex})">+ Add Section</button>
+            </div>`;
 
             return `
             <div class="slide" style="${slideStyle}">
@@ -576,6 +648,88 @@
                 ${sectionsHTML}
             </div>`;
         }).join('');
+    }
+
+    function toggleInlineEdit(slideIndex, sectionIndex, btn) {
+        const contentDiv = document.getElementById(`content-${slideIndex}-${sectionIndex}`);
+        const labelSpan = document.getElementById(`label-${slideIndex}-${sectionIndex}`);
+        const isEditing = contentDiv.isContentEditable;
+
+        if (isEditing) {
+            // Save
+            scriptData[slideIndex].sections[sectionIndex].content = contentDiv.innerHTML;
+            if (labelSpan) scriptData[slideIndex].sections[sectionIndex].label = labelSpan.innerText;
+            saveToFirebase();
+            contentDiv.contentEditable = "false";
+            if (labelSpan) labelSpan.contentEditable = "false";
+            btn.innerHTML = "✎";
+            btn.classList.remove('save-mode');
+        } else {
+            // Enable Edit
+            contentDiv.contentEditable = "true";
+            if (labelSpan) labelSpan.contentEditable = "true";
+            contentDiv.focus();
+            btn.innerHTML = "💾";
+            btn.classList.add('save-mode');
+        }
+    }
+
+    function toggleHeaderEdit(slideIndex, btn) {
+        const titleEl = document.getElementById(`title-${slideIndex}`);
+        const subtitleEl = document.getElementById(`subtitle-${slideIndex}`);
+        const isEditing = titleEl.isContentEditable;
+
+        if (isEditing) {
+            scriptData[slideIndex].header.title = titleEl.innerText;
+            scriptData[slideIndex].header.subtitle = subtitleEl.innerText;
+            saveToFirebase();
+            titleEl.contentEditable = "false";
+            subtitleEl.contentEditable = "false";
+            btn.innerHTML = "✎";
+            btn.classList.remove('save-mode');
+        } else {
+            titleEl.contentEditable = "true";
+            subtitleEl.contentEditable = "true";
+            titleEl.focus();
+            btn.innerHTML = "💾";
+            btn.classList.add('save-mode');
+        }
+    }
+
+    function toggleSpeakerEdit(slideIndex, btn) {
+        const speakerEl = document.getElementById(`speakers-${slideIndex}`);
+        const isEditing = speakerEl.isContentEditable;
+
+        if (isEditing) {
+            scriptData[slideIndex].speakers = speakerEl.innerText;
+            saveToFirebase();
+            speakerEl.contentEditable = "false";
+            btn.innerHTML = "✎";
+            btn.classList.remove('save-mode');
+        } else {
+            speakerEl.contentEditable = "true";
+            speakerEl.focus();
+            btn.innerHTML = "💾";
+            btn.classList.add('save-mode');
+        }
+    }
+
+    function deleteSectionInline(slideIndex, sectionIndex) {
+        if(confirm("Delete this section?")) {
+            scriptData[slideIndex].sections.splice(sectionIndex, 1);
+            saveToFirebase();
+            renderMainSlider();
+        }
+    }
+
+    function addSectionInline(slideIndex) {
+        scriptData[slideIndex].sections.push({
+            type: "intro-section",
+            label: "New Section",
+            content: "Edit me..."
+        });
+        saveToFirebase();
+        renderMainSlider();
     }
 
     // Initial Render
@@ -730,7 +884,14 @@
             </div>
             <div class="form-group">
                 <label>Content</label>
-                <textarea class="section-content-input">${data.content || ''}</textarea>
+                <div class="wysiwyg-container">
+                    <div class="wysiwyg-toolbar">
+                        <button type="button" onmousedown="event.preventDefault(); document.execCommand('bold', false, null);" title="Bold">B</button>
+                        <button type="button" onmousedown="event.preventDefault(); document.execCommand('italic', false, null);" title="Italic">I</button>
+                        <button type="button" onmousedown="event.preventDefault(); document.execCommand('underline', false, null);" title="Underline">U</button>
+                    </div>
+                    <div class="wysiwyg-content section-content-input" contenteditable="true">${data.content || ''}</div>
+                </div>
             </div>
             <div class="form-group">
                 <label>Dept. List (Optional)</label>
@@ -753,7 +914,7 @@
         sectionGroups.forEach(group => {
             const type = group.querySelector('.section-type-select').value;
             const label = group.querySelector('.section-label-input').value;
-            const content = group.querySelector('.section-content-input').value;
+            const content = group.querySelector('.section-content-input').innerHTML;
             const deptList = group.querySelector('.section-dept-input').value;
             
             let contentClass = "";
@@ -780,9 +941,13 @@
     function toggleUI() {
         const printBtn = document.querySelector('.print-btn');
         const managerBtn = document.querySelector('.manager-btn');
+        const sectionControls = document.querySelectorAll('.section-controls');
+        const slideControls = document.querySelectorAll('.slide-controls');
         const isHidden = printBtn.style.display === 'none';
         printBtn.style.display = isHidden ? '' : 'none';
         managerBtn.style.display = isHidden ? '' : 'none';
+        sectionControls.forEach(el => el.style.display = isHidden ? '' : 'none');
+        slideControls.forEach(el => el.style.display = isHidden ? '' : 'none');
     }
 
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
