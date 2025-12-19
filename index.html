@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UNO-R Master Script 2025</title>
+    <title>UNO-R Master Digital Script 2025</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -11,45 +11,52 @@
             --unor-gold: #FFD700;
             --text-white: #ffffff;
             --bg-dark: #001a35;
-            --vo-gray: #2d3436;
-            --festive-red: #d63031;
+            --vo-gray: #34495e;
+            --festive-green: #27ae60;
         }
 
         * { box-sizing: border-box; }
         body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; font-family: 'Montserrat', sans-serif; background-color: var(--bg-dark); }
 
+        /* Progress Bar */
+        .progress-nav { position: fixed; top: 0; left: 0; width: 100%; height: 8px; background: rgba(255,255,255,0.1); z-index: 1000; }
+        .progress-bar { height: 100%; background: var(--unor-gold); width: 0%; transition: width 0.3s ease; }
+
+        /* Nav Arrows */
+        .nav-arrow { position: fixed; top: 50%; transform: translateY(-50%); background: rgba(255, 215, 0, 0.2); color: var(--unor-gold); border: 2px solid var(--unor-gold); padding: 15px; border-radius: 50%; cursor: pointer; z-index: 1001; font-size: 1.5rem; width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; }
+        .prev { left: 15px; } .next { right: 15px; }
+
         /* Swipe Container */
         .slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; height: 100vh; width: 100vw; -webkit-overflow-scrolling: touch; }
         .slider::-webkit-scrollbar { display: none; }
 
-        /* Each Card */
-        .slide { flex: 0 0 100vw; width: 100vw; height: 100vh; scroll-snap-align: start; padding: 60px 40px; display: flex; flex-direction: column; justify-content: flex-start; position: relative; }
+        /* Slide Cards */
+        .slide { flex: 0 0 100vw; width: 100vw; height: 100vh; scroll-snap-align: start; padding: 60px 80px; display: flex; flex-direction: column; justify-content: flex-start; position: relative; overflow-y: auto; }
 
-        /* Nav Arrows */
-        .nav-arrow { position: fixed; top: 50%; transform: translateY(-50%); background: rgba(255, 215, 0, 0.1); color: var(--unor-gold); border: 1px solid var(--unor-gold); padding: 15px; border-radius: 50%; cursor: pointer; z-index: 1000; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; }
-        .prev { left: 10px; } .next { right: 10px; }
+        .header { margin-bottom: 20px; border-bottom: 3px solid var(--unor-gold); padding-bottom: 10px; }
+        .header h2 { font-family: 'Playfair Display', serif; color: var(--unor-gold); margin: 0; font-size: 1.8rem; text-transform: uppercase; }
+        .header p { color: #bdc3c7; font-size: 0.9rem; margin: 5px 0; font-weight: 700; letter-spacing: 1px; }
 
-        /* Progress Bar */
-        .progress-nav { position: fixed; top: 0; left: 0; width: 100%; height: 6px; background: rgba(255,255,255,0.1); z-index: 100; }
-        .progress-bar { height: 100%; background: var(--unor-gold); width: 0%; transition: width 0.3s ease; }
-
-        /* Typography */
-        .header { margin-bottom: 20px; border-bottom: 2px solid var(--unor-gold); padding-bottom: 10px; }
-        .header h2 { font-family: 'Playfair Display', serif; color: var(--unor-gold); margin: 0; font-size: 1.3rem; text-transform: uppercase; }
-        .section { background: rgba(255,255,255,0.05); margin: 8px 0; padding: 15px; border-radius: 12px; border-left: 4px solid transparent; }
-        .label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; display: block; color: rgba(255,255,255,0.6); }
-        .vo-badge { background: var(--festive-red); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.6rem; margin-right: 5px; }
+        .section { background: rgba(255,255,255,0.07); margin: 10px 0; padding: 20px; border-radius: 15px; border-left: 5px solid transparent; }
+        .label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 1.5px; }
         
-        .bridge-section { border-left-color: #ff9f43; }
-        .intro-section { border-left-color: #54a0ff; }
-        .thank-section { border-left-color: #1dd1a1; }
+        .bridge-section { border-left-color: #e67e22; }
+        .intro-section { border-left-color: #3498db; }
+        .thank-section { border-left-color: var(--festive-green); }
 
-        .content { font-size: 1rem; line-height: 1.5; color: var(--text-white); }
-        .bridge-text { font-style: italic; color: #ff9f43; }
-        .thank-text { font-weight: 600; color: #1dd1a1; }
-        .dept-list { font-size: 0.75rem; color: #bdc3c7; margin-top: 5px; display: block; }
+        .content { font-size: 1.15rem; line-height: 1.6; color: var(--text-white); }
+        .bridge-text { font-style: italic; color: #e67e22; }
+        .thank-text { font-weight: 700; color: var(--festive-green); }
+        .dept-list { font-size: 0.85rem; color: #ecf0f1; margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px; font-weight: 400; display: block; }
+        
+        .vo-badge { background: #c0392b; color: white; padding: 4px 10px; border-radius: 5px; font-size: 0.7rem; margin-right: 10px; vertical-align: middle; }
+        .seq-num { position: absolute; top: 65px; right: 80px; font-size: 3rem; color: rgba(255,255,255,0.05); font-weight: 900; }
 
-        @media (max-width: 600px) { .nav-arrow { display: none; } .slide { padding: 40px 20px; } }
+        @media (max-width: 768px) {
+            .slide { padding: 50px 30px; }
+            .nav-arrow { display: none; }
+            .seq-num { right: 30px; font-size: 2rem; }
+        }
     </style>
 </head>
 <body>
@@ -61,178 +68,197 @@
 <div class="slider" id="slider">
     
     <div class="slide" style="background: var(--vo-gray);">
-        <div class="header"><h2><span class="vo-badge">VOICE OVER</span> Spiritual Opening</h2></div>
+        <div class="seq-num">01</div>
+        <div class="header"><h2><span class="vo-badge">VOICE OVER</span> Spiritual Opening</h2><p>Off-Stage Audio Only</p></div>
         <div class="section intro-section">
-            <span class="label">Script</span>
-            <div class="content">"Good evening, UNO-R family. To begin our holy celebration, let us all stand for the Invocation to be given in music by the <b>Kapawa Choir</b> and in words by <b>Rev. Fr. Leo G. Alaras, OAR</b>, our VP for Identity, Formation, and Mission."</div>
+            <span class="label">The Script</span>
+            <div class="content">"Good evening, UNO-Rians! To begin this holy and festive night, let us all stand in reverence for the Invocation, to be rendered in music by the <b>Kapawa Choir</b> and in words by <b>Rev. Fr. Leo G. Alaras, OAR</b>, our VP for Identity, Formation, and Mission."</div>
         </div>
     </div>
 
     <div class="slide" style="background: var(--vo-gray);">
-        <div class="header"><h2><span class="vo-badge">VOICE OVER</span> Anthem & Theme</h2></div>
+        <div class="seq-num">02</div>
+        <div class="header"><h2><span class="vo-badge">VOICE OVER</span> National Pride</h2><p>Off-Stage Audio Only</p></div>
         <div class="section intro-section">
-            <span class="label">Script</span>
-            <div class="content">"Please remain standing as we honor our country with the Philippine National Anthem, followed by the heart of our celebration—a special AVP on our theme: <b>Rise... Rebuild... Celebrate Christmas!</b>"</div>
+            <span class="label">The Script</span>
+            <div class="content">"Please remain standing for the Philippine National Anthem, followed by a special AVP presentation on our theme for 2025: <b>'Rise... Rebuild... Celebrate Christmas!'</b>"</div>
         </div>
     </div>
 
     <div class="slide" style="background: var(--vo-gray);">
-        <div class="header"><h2><span class="vo-badge">VOICE OVER</span> Host Production</h2></div>
+        <div class="seq-num">03</div>
+        <div class="header"><h2><span class="vo-badge">VOICE OVER</span> Host Showcase</h2><p>Off-Stage Audio Only</p></div>
         <div class="section intro-section">
-            <span class="label">Script</span>
-            <div class="content">"Tonight’s festivities are brought to you by the masters of structure and innovation. Let’s feel the power of the blueprint! Please welcome our host college for a special Production Number—the <b>College of Engineering (COEN)!</b>"</div>
+            <span class="label">The Script</span>
+            <div class="content">"They are the architects of our joy tonight! To officially open our program with energy and power, let’s welcome our hosts—the <b>College of Engineering (COEN)</b> for their Production Number!"</div>
         </div>
     </div>
 
     <div class="slide">
-        <div class="header"><h2>Host Entrance</h2></div>
+        <div class="seq-num">04</div>
+        <div class="header"><h2>Erl, Rue, Dan, & Mark</h2><p>Host Entrance</p></div>
         <div class="section bridge-section">
             <span class="label">The Bridge</span>
-            <div class="content bridge-text">Erl, Rue, Dan, and Mark enter with massive energy, applauding COEN.</div>
+            <div class="content bridge-text">Erl, Rue, Dan, and Mark walk on stage with big energy, applauding COEN.</div>
         </div>
         <div class="section intro-section">
-            <span class="label">Intro</span>
-            <div class="content">"Bacolod City, make some noise! That was Engineering excellence at its finest! Good evening, UNO-R! We are your hosts for tonight: I'm <b>Erl</b>, with <b>Rue</b>, <b>Dan</b>, and <b>Mark</b>!"</div>
+            <span class="label">The Intro</span>
+            <div class="content">"Whooo! Bacolod, can you feel that Engineering energy?! Good evening, UNO-R! We are your hosts for this spectacular night—I'm <b>Erl</b>, and with me are <b>Rue, Dan, and Mark!</b>"</div>
         </div>
         <div class="section intro-section">
-            <span class="label">Theme Intro</span>
-            <div class="content">"Tonight, we aren't just here to eat and dance—we are here to celebrate how this community has risen from every challenge and rebuilt with hope. Welcome to the Institutional Christmas Party 2025!"</div>
+            <span class="label">The Spirit</span>
+            <div class="content">"Tonight is all about gratitude. We've Risen, we've Rebuilt, and now—it's time to Celebrate Christmas as one Recoleto family!"</div>
         </div>
     </div>
 
     <div class="slide">
-        <div class="header"><h2>President's Message</h2></div>
+        <div class="seq-num">05</div>
+        <div class="header"><h2>Father President</h2><p>President's Message</p></div>
         <div class="section intro-section">
-            <span class="label">Introduction</span>
-            <div class="content">"Every great journey needs a steady hand at the helm. To share his vision and holiday message, let us welcome our Father President, <b>Rev. Fr. Joel A. Alve, OAR.</b>"</div>
+            <span class="label">The Intro</span>
+            <div class="content">"To share a message of hope that lights up our path like the star of Bethlehem, let us welcome our Father President, <b>Rev. Fr. Joel A. Alve, OAR.</b>"</div>
         </div>
         <div class="section thank-section">
-            <span class="label">Thank You</span>
-            <div class="content thank-text">"Thank you, Father President. Your words are the perfect ornament of inspiration on our institutional tree tonight!"</div>
+            <span class="label">Improved Thank You</span>
+            <div class="content thank-text">"Thank you, Fr. Joel! Your words are like the first snowfall—refreshing, inspiring, and reminding us of the beauty of our mission."</div>
         </div>
     </div>
 
     <div class="slide">
-        <div class="header"><h2>Dinner & Minor Raffles</h2></div>
-        <div class="section intro-section">
-            <span class="label">Intro</span>
-            <div class="content">"Fr. Joel fed our souls, but now the buffet is calling! Dinner is officially served! But don't get too comfortable—our Minor Raffle prizes are coming out right now! Keep your ears open for your names!"</div>
+        <div class="seq-num">06</div>
+        <div class="header"><h2>The Christmas Feast</h2><p>Dinner & Minor Raffles</p></div>
+        <div class="section bridge-section">
+            <span class="label">The Bridge</span>
+            <div class="content bridge-text">"Fr. Joel fed our souls; now let’s let the Acacia buffet feed our appetites!"</div>
         </div>
-        <div class="section thank-section">
-            <span class="label">Thank You</span>
-            <div class="content thank-text">"To our early winners, Merry Christmas! To everyone else, enjoy the feast—the show of the year is coming up next!"</div>
+        <div class="section intro-section">
+            <span class="label">The Intro</span>
+            <div class="content">"Dinner is officially served! Dig in, enjoy the music, and keep your raffle tickets handy—we’re drawing our <b>Minor Prizes</b> while you dine!"</div>
         </div>
     </div>
 
     <div class="slide">
-        <div class="header"><h2>Musical Show: Intro</h2></div>
+        <div class="seq-num">07</div>
+        <div class="header"><h2>Program Part 2</h2><p>Lay Admin Opener</p></div>
+        <div class="section bridge-section">
+            <span class="label">The Bridge</span>
+            <div class="content bridge-text">"I hope your stomachs are full because it’s time to fill the stage with talent!"</div>
+        </div>
         <div class="section intro-section">
-            <span class="label">Intro</span>
-            <div class="content">"Forks down, hearts up! It’s time for <b>Part 2: The Musical Show!</b> To open the floor, here is the Lay Admin with the ultimate wish list: <b>'All I Want for Christmas!'</b>"</div>
+            <span class="label">The Intro</span>
+            <div class="content">"Welcome to Part 2! Opening our Musical Show, let’s welcome the **Lay Admin** with the holiday anthem: <b>'All I Want for Christmas!'</b>"</div>
         </div>
         <div class="section thank-section">
-            <span class="label">Thank You</span>
-            <div class="content thank-text">"What a charming start! Thank you, Lay Admin, for setting the perfect holiday mood!"</div>
+            <span class="label">Improved Thank You</span>
+            <div class="content thank-text">"What a charming start! If all you want for Christmas is talent, the Lay Admin just delivered it in spades!"</div>
         </div>
     </div>
 
     <div class="slide">
-        <div class="header"><h2>Cluster 1</h2></div>
+        <div class="seq-num">08</div>
+        <div class="header"><h2>Cluster 1</h2><p>Song: It's Like an Earthquake</p></div>
         <div class="section intro-section">
-            <span class="label">Intro</span>
-            <div class="content">"Rebuilding starts with a shake! Let’s welcome Cluster 1 as they show us that even through the tremors, we stand strong. Here is: <b>'It’s Like an Earthquake!'</b>"</div>
-            <span class="dept-list">Pres. Office, Planning, QA, Marketing, Library, STEP, ETEEAP, REED</span>
+            <span class="label">The Intro</span>
+            <div class="content">"Every rebuilding process starts with a shake-up! Let’s feel the ground move with Cluster 1!"</div>
+            <div class="dept-list">Featuring: President's Office, Planning, QA, Marketing, Library, STEP, ETEEAP, & REED.</div>
         </div>
         <div class="section thank-section">
-            <span class="label">Thank You</span>
-            <div class="content thank-text">"Ground-shaking talent! Thank you, Cluster 1, for that high-magnitude performance!"</div>
+            <span class="label">Improved Thank You</span>
+            <div class="content thank-text">"That was ground-breaking! Thank you, Cluster 1, for shaking off the dust and rising to the occasion!"</div>
         </div>
     </div>
 
     <div class="slide">
-        <div class="header"><h2>Cluster 2</h2></div>
+        <div class="seq-num">09</div>
+        <div class="header"><h2>Cluster 2</h2><p>Song: I Will Survive</p></div>
         <div class="section intro-section">
-            <span class="label">Intro</span>
-            <div class="content">"Our next group proves that Recoletos spirit never breaks. They aren't just staying afloat—they are thriving! Here is Cluster 2 with: <b>'I Will Survive!'</b>"</div>
-            <span class="dept-list">VP-Admin, HRMDO, SSD, ICTD, Registrar, SDPC</span>
+            <span class="label">The Intro</span>
+            <div class="content">"They are the backbone of our admin operations, and they prove that no matter the challenge, we are survivors! Here is Cluster 2!"</div>
+            <div class="dept-list">Featuring: VP-Admin, HRMDO, SSD, ICTD, Registrar, & SDPC.</div>
         </div>
         <div class="section thank-section">
-            <span class="label">Thank You</span>
-            <div class="content thank-text">"Survival never looked so stylish! Thank you for that incredible energy, Cluster 2!"</div>
+            <span class="label">Improved Thank You</span>
+            <div class="content thank-text">"Survival never looked so glamorous! Thank you, Cluster 2, for that incredible disco-powered resilience!"</div>
         </div>
     </div>
 
     <div class="slide">
-        <div class="header"><h2>Cluster 3</h2></div>
+        <div class="seq-num">10</div>
+        <div class="header"><h2>Cluster 3</h2><p>Song: Here Comes the Rain Again</p></div>
         <div class="section intro-section">
-            <span class="label">Intro</span>
-            <div class="content">"After the storm comes the growth. Representing our academic and integrated community, let’s welcome Cluster 3 with: <b>'Here Comes the Rain Again!'</b>"</div>
-            <span class="dept-list">VP-Academics & Research and Integrated School</span>
+            <span class="label">The Intro</span>
+            <div class="content">"You can’t have growth without a little rain. Let’s welcome our academics and researchers who nurture our community. Cluster 3!"</div>
+            <div class="dept-list">Featuring: VP-Academics & Research and Integrated School.</div>
         </div>
         <div class="section thank-section">
-            <span class="label">Thank You</span>
-            <div class="content thank-text">"That was absolutely refreshing! A beautiful interpretation of growth and resilience. Thank you, Cluster 3!"</div>
+            <span class="label">Improved Thank You</span>
+            <div class="content thank-text">"That was refreshing! Thank you, Cluster 3, for washing away the challenges and bringing the growth!"</div>
         </div>
     </div>
 
     <div class="slide">
-        <div class="header"><h2>Cluster 4</h2></div>
+        <div class="seq-num">11</div>
+        <div class="header"><h2>Cluster 4</h2><p>Song: Rock and Roll</p></div>
         <div class="section intro-section">
-            <span class="label">Intro</span>
-            <div class="content">"Now we reach the 'Rebuild' phase! Our colleges are showing us that our foundation is solid gold. Here is Cluster 4 with: <b>'We Built this City on Rock and Roll!'</b>"</div>
-            <span class="dept-list">VP-Academics & Research and the Colleges</span>
+            <span class="label">The Intro</span>
+            <div class="content">"We built this institution on a solid foundation of faith... and a little bit of Rock and Roll! Get loud for Cluster 4!"</div>
+            <div class="dept-list">Featuring: VP-Academics & Research and all Colleges.</div>
         </div>
         <div class="section thank-section">
-            <span class="label">Thank You</span>
-            <div class="content thank-text">"That was rock-solid! Thank you, Cluster 4, for bringing that stadium-sized energy to Acacia!"</div>
+            <span class="label">Improved Thank You</span>
+            <div class="content thank-text">"You guys didn't just build this city; you rocked this ballroom! What an electric performance!"</div>
         </div>
     </div>
 
     <div class="slide">
-        <div class="header"><h2>Cluster 5</h2></div>
+        <div class="seq-num">12</div>
+        <div class="header"><h2>Cluster 5</h2><p>Songs: Staying Alive / Get Loud</p></div>
         <div class="section intro-section">
-            <span class="label">Intro</span>
-            <div class="content">"We’ve risen, we’ve rebuilt... now it’s time to CELEBRATE! Our final group is bringing the double threat: <b>'Staying Alive'</b> and <b>'Let’s Get Loud!'</b>"</div>
-            <span class="dept-list">VP-IFM, DSA, Accounting, Property, MIS, Maintenance, and more!</span>
+            <span class="label">The Intro</span>
+            <div class="content">"It’s time for the grand finale of our musical show! They’re staying alive and they’re getting LOUD! Here is Cluster 5!"</div>
+            <div class="dept-list">Featuring: VP-IFM, DSA, Accounting, Property, MIS, & Maintenance teams.</div>
         </div>
         <div class="section thank-section">
-            <span class="label">Thank You</span>
-            <div class="content thank-text">"The house is officially down! Thank you, Cluster 5, for that explosive finale!"</div>
+            <span class="label">Improved Thank You</span>
+            <div class="content thank-text">"Now THAT is how you celebrate! Thank you, Cluster 5, for bringing the house down and the spirits up!"</div>
         </div>
     </div>
 
     <div class="slide">
-        <div class="header"><h2>Surprise & Major Prizes</h2></div>
+        <div class="seq-num">13</div>
+        <div class="header"><h2>The Big Wins</h2><p>Surprise & Major Raffles</p></div>
         <div class="section intro-section">
-            <span class="label">Intro</span>
-            <div class="content">"What a show! But wait... we have a **Surprise Number** coming your way! And immediately after, keep those tickets tight—we are drawing the **Major Raffle Prizes!**"</div>
+            <span class="label">The Intro</span>
+            <div class="content">"The show was spectacular, but how about a **Surprise Number**? And right after, grab your tickets—we are drawing the **Major Prizes!**"</div>
         </div>
         <div class="section thank-section">
-            <span class="label">Thank You</span>
-            <div class="content thank-text">"That surprise was the cherry on top! And to our Major winners—congratulations on those fantastic gifts!"</div>
+            <span class="label">Improved Thank You</span>
+            <div class="content thank-text">"What a surprise! And to our winners—your Christmas list just got a lot shorter. Congratulations!"</div>
         </div>
     </div>
 
     <div class="slide">
-        <div class="header"><h2>Closing Remarks</h2></div>
+        <div class="seq-num">14</div>
+        <div class="header"><h2>A Final Word</h2><p>Closing Remarks</p></div>
         <div class="section intro-section">
-            <span class="label">Intro</span>
-            <div class="content">"As we wrap up our formal proceedings, let's hear from the man who helped 'build' this incredible night. Please welcome the Chair of the 2025 Christmas Party, <b>Rev. Fr. Romeo Ben A. Potencio, Jr., OAR.</b>"</div>
+            <span class="label">The Intro</span>
+            <div class="content">"To wrap up our formal proceedings with a grateful heart, let’s welcome the Chair of the 2025 Party, <b>Rev. Fr. Romeo Ben A. Potencio, Jr., OAR.</b>"</div>
         </div>
         <div class="section thank-section">
-            <span class="label">Thank You</span>
-            <div class="content thank-text">"Thank you, Fr. Ben! We are truly grateful for your leadership and this unforgettable evening."</div>
+            <span class="label">Improved Thank You</span>
+            <div class="content thank-text">"Thank you, Fr. Ben! This night was a gift to us all, wrapped in your dedication and vision."</div>
         </div>
     </div>
 
     <div class="slide" style="background: var(--unor-blue);">
-        <div class="header"><h2 style="color:var(--unor-gold)">The Grand Finale</h2></div>
-        <div class="section intro-section" style="background:rgba(255,255,255,0.1)">
-            <span class="label" style="color:var(--unor-gold)">One Last Prize</span>
-            <div class="content">"It’s time! The **Grand Raffle Prize** is officially up! And after that, everyone—let's stand for our Community Singing!"</div>
+        <div class="seq-num" style="color:rgba(255,215,0,0.2)">15</div>
+        <div class="header"><h2 style="color:var(--unor-gold)">The Grand Finale</h2><p style="color:white">Grand Raffle & Party-Party-Party!</p></div>
+        <div class="section intro-section" style="background:rgba(255,255,255,0.1); border-left-color:var(--unor-gold)">
+            <span class="label" style="color:var(--unor-gold)">One Last Ticket</span>
+            <div class="content">"It’s the moment of truth—the **Grand Raffle Prize!** And after that, everyone, let's lift our voices for our Community Singing!"</div>
         </div>
-        <div class="section thank-section" style="border:none; text-align:center;">
-            <div class="content" style="font-size: 1.6rem; color:var(--unor-gold)">"Merry Christmas, UNO-R family!<br><b>PARTY! PARTY! PARTY!</b>"</div>
+        <div class="section" style="text-align:center; border:none;">
+            <div class="content" style="font-size: 1.8rem; color:var(--unor-gold); font-weight:800; text-shadow: 2px 2px 10px rgba(0,0,0,0.5);">"Merry Christmas UNO-R!<br>LET'S PARTY! PARTY! PARTY!"</div>
         </div>
     </div>
 
@@ -253,6 +279,7 @@
         slider.scrollBy({ left: direction * slideWidth, behavior: 'smooth' });
     }
 
+    // Keyboard navigation
     window.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') moveSlide(1);
         if (e.key === 'ArrowLeft') moveSlide(-1);
