@@ -306,6 +306,7 @@
         <h2>Slide Manager</h2>
         <div style="margin-bottom: 15px; text-align: right;">
             <button class="btn-save" onclick="exportJSON()">&#128229; Export JSON</button>
+            <button class="btn-save" onclick="exportText()" style="background: #e67e22;">&#128196; Export Text</button>
             <button class="btn-save" onclick="document.getElementById('importFile').click()" style="background: #3498db;">&#128228; Import JSON</button>
         </div>
         <div id="slideList" class="slide-list-grid"></div>
@@ -655,6 +656,44 @@
         document.body.appendChild(downloadAnchorNode);
         downloadAnchorNode.click();
         downloadAnchorNode.remove();
+    }
+
+    function exportText() {
+        let textContent = "";
+        
+        scriptData.forEach(slide => {
+            textContent += `=== SLIDE ${slide.seqNum} ===\n`;
+            textContent += `TITLE: ${slide.header.title}\n`;
+            if (slide.header.subtitle) textContent += `SUBTITLE: ${slide.header.subtitle}\n`;
+            if (slide.speakers) textContent += `SPEAKERS: ${slide.speakers}\n`;
+            textContent += `\n`;
+            
+            slide.sections.forEach(section => {
+                if (section.label) textContent += `[${section.label}]\n`;
+                
+                // Strip HTML tags to get clean text
+                const tempDiv = document.createElement("div");
+                tempDiv.innerHTML = section.content;
+                const plainText = tempDiv.innerText || tempDiv.textContent || "";
+                
+                textContent += `${plainText.trim()}\n\n`;
+            });
+            
+            textContent += `--------------------------------------------------\n\n`;
+        });
+
+        const blob = new Blob([textContent], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        
+        const date = new Date();
+        const timestamp = date.getFullYear() + "-" + (date.getMonth() + 1).toString().padStart(2, '0') + "-" + date.getDate().toString().padStart(2, '0') + "_" + date.getHours().toString().padStart(2, '0') + "-" + date.getMinutes().toString().padStart(2, '0');
+        a.download = `${timestamp}_script_readable.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
     }
 
     function importJSON(event) {
